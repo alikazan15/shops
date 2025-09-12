@@ -42,6 +42,7 @@ class AdminController extends Controller
         $image = $request->file('image');
         $file_extention = $request->file('image')->extension();
         $file_name = Carbon::now()->timestamp . '.' . $file_extention;
+        $this->GenerateBrandThumbailsImage($image,$file_name);
         $brand->image = $file_name;
         $brand->save();
         return redirect()->route('admin.brands')->with('status', 'Brand has been added succesfully!');
@@ -50,6 +51,10 @@ class AdminController extends Controller
     public function GenerateBrandThumbailsImage($image,$imageName)
     {
         $destinationPath=public_path('uploads/brands');
-        $image=Image::read($image->path);
+        $img=Image::read($image->path());
+        $img->cover(124,124,"top");
+        $img->resize(124,124,function($constraint){
+            $constraint->aspectRatio();
+        })->save($destinationPath.'/'.$imageName);
     }
 }
